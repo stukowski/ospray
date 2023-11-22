@@ -9,6 +9,8 @@
 #include "Mesh.h"
 #include "Planes.h"
 #include "Spheres.h"
+#include "Quadrics.h"
+#include "Superquadrics.h"
 #ifndef OSPRAY_TARGET_SYCL
 #include "Subdivision.h"
 #endif
@@ -29,6 +31,8 @@ void registerAllGeometries()
   Geometry::registerType<Subdivision>("subdivision");
 #endif
   Geometry::registerType<Planes>("plane");
+  Geometry::registerType<Quadrics>("quadric");
+  Geometry::registerType<Superquadrics>("superquadric");
 }
 
 } // namespace ospray

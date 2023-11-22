@@ -67,6 +67,8 @@ set(OSPRAY_CPP_SOURCES
   geometry/Spheres.cpp
   geometry/Planes.cpp
   geometry/Mesh.cpp
+  geometry/Quadrics.cpp
+  geometry/Superquadrics.cpp
   geometry/registration.cpp
 
   lights/Light.cpp
@@ -152,6 +154,8 @@ set(OSPRAY_ISPC_SOURCES
   geometry/Spheres.ispc
   geometry/Planes.ispc
   geometry/Mesh.ispc
+  geometry/Quadrics.ispc
+  geometry/Superquadrics.ispc
 
   lights/LightDispatch.ispc
   lights/Light.ispc
