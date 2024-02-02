@@ -34,11 +34,12 @@ export void Quadrics_bounds(const RTCBoundsFunctionArguments *uniform args)
 	*out = make_box3fa(center - radius, center + radius);
 }
 
-void Quadrics_intersect_kernel(const RTCIntersectFunctionNArguments* uniform args, const uniform bool isOcclusionTest)
+SYCL_EXTERNAL unmasked void Quadrics_intersect_kernel(const RTCIntersectFunctionNArguments* uniform args, const uniform bool isOcclusionTest)
 {
 	// Make sure to set the mask
 	if(!args->valid[programIndex])
 		return;
+	args->valid[programIndex] = 0;
 
 	Quadrics* uniform self = (Quadrics* uniform)args->geometryUserPtr;
 	uniform int primID = args->primID;
@@ -125,8 +126,8 @@ void Quadrics_intersect_kernel(const RTCIntersectFunctionNArguments* uniform arg
 			}
 		}
 	}
-	if(hit) {
-		if (isOcclusionTest) {
+	if(hit) {				
+		if (isOcclusionTest) {	
 			ray->t = neg_inf;
 		}
 		else {
@@ -148,6 +149,9 @@ void Quadrics_intersect_kernel(const RTCIntersectFunctionNArguments* uniform arg
 			coeff_h*(pnt.z - center.z) + coeff_i);
 
 			ray->Ng = normalize(ray->Ng);
+			ray->u = 0.f;
+          	ray->v = 0.f;
+			args->valid[programIndex] = -1;
 		}
 	}
 }

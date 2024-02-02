@@ -318,11 +318,12 @@ bool check_hit2(const vec3f& P, const vec3f& D, float t0, vec3f& P0, float v0, f
     return false;
 }
 
-void Superquadrics_intersect_kernel(const RTCIntersectFunctionNArguments* uniform args, const uniform bool isOcclusionTest)
+SYCL_EXTERNAL unmasked void Superquadrics_intersect_kernel(const RTCIntersectFunctionNArguments* uniform args, const uniform bool isOcclusionTest)
 {
 	// Make sure to set the mask
 	if(!args->valid[programIndex])
 		return;
+	args->valid[programIndex] = 0;
 
 	Superquadrics* uniform self = (Superquadrics* uniform)args->geometryUserPtr;
 	uniform int primID = args->primID;
@@ -488,6 +489,10 @@ void Superquadrics_intersect_kernel(const RTCIntersectFunctionNArguments* unifor
 
 		// Transform the normal from superellipsoid space to view space.
 		ray->Ng = normalize(transposed(tensor) * P);
+
+        ray->u = 0.f;
+        ray->v = 0.f;
+        args->valid[programIndex] = -1;
 	}
 }
 
