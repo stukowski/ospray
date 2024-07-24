@@ -15,7 +15,7 @@ void Quadrics_bounds(const RTCBoundsFunctionArguments *args);
 
 namespace ospray {
 
-Superquadrics::Superquadrics(api::ISPCDevice& device) : AddStructShared(device.getIspcrtContext(), device, FeatureFlagsGeometry(RTC_FEATURE_FLAG_FILTER_FUNCTION_IN_GEOMETRY))
+Superquadrics::Superquadrics(api::ISPCDevice& device) : AddStructShared(device.getDRTDevice(), device, FeatureFlagsGeometry(RTC_FEATURE_FLAG_FILTER_FUNCTION_IN_GEOMETRY))
 {
 #ifndef OSPRAY_TARGET_SYCL
     getSh()->super.postIntersect = ispc::Superquadrics_postIntersect_addr();
