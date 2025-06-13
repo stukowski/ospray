@@ -111,9 +111,15 @@ SYCL_EXTERNAL const varying BSDF *uniform Principled_getBSDF(
   if (hasAlpha(self->baseColorMap)) {
     vec4f baseColorSample = get4f(self->baseColorMap, dg, make_vec4f(1.f));
     opacity *= baseColorSample.w;
+  } else {
+    // Add support for geometry based color coding "vertex.color"
+    // This is only applied if there is no baseColorMap to prevent double
+    // transparency. Needed specifically in OVITO.
+    // All subsequent calls to self->opacity are replaced by opacity.
+    opacity *= dg.color.w;
   }
 
-  if (self->opacity > EPS) {
+  if (opacity > EPS) {
     varying linear3f *uniform baseFrame = frame;
     if (valid(self->baseNormalMap)) {
       baseFrame = LinearSpace3f_create(ctx,
@@ -416,7 +422,7 @@ SYCL_EXTERNAL const varying BSDF *uniform Principled_getBSDF(
   }
 
   // cut-out transparency
-  if (1.f - self->opacity > EPS || valid(self->opacityMap)
+  if (1.f - opacity > EPS || valid(self->opacityMap)
       || hasAlpha(self->baseColorMap)) {
     const float transparency = 1.f - opacity;
     Transmission_Constructor(
@@ -442,6 +448,12 @@ SYCL_EXTERNAL vec3f Principled_getTransparency(
   if (hasAlpha(self->baseColorMap)) {
     vec4f baseColorSample = get4f(self->baseColorMap, dg, make_vec4f(1.f));
     opacity *= baseColorSample.w;
+  } else {
+    // Add support for geometry based color coding "vertex.color"
+    // This is only applied if there is no baseColorMap to prevent double
+    // transparency. Needed specifically in OVITO.
+    // All subsequent calls to self->opacity are replaced by opacity.
+    opacity *= dg.color.w;
   }
 
   const float transparency = 1.f - opacity;
@@ -453,7 +465,7 @@ SYCL_EXTERNAL vec3f Principled_getTransparency(
     return T;
 
   // cut-out opacity
-  if (self->opacity > EPS) {
+  if (opacity > EPS) {
     // glass base
     const float specular =
         clamp(self->specular * get1f(self->specularMap, dg, 1.f));
